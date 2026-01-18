@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Happy Birthday!</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', Arial, sans-serif;
+      background: #fff;
+      color: #222;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body {
+      background: linear-gradient(135deg, #ffe6f7 0%, #f6e1fc 100%);
+      min-height: 100vh;
+      transition: background 0.5s;
+    }
+    .section {
+      display: none;
+      min-height: 100vh;
+      width: 100vw;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      position: absolute;
+      top: 0; left: 0;
+      z-index: 1;
+      padding: 0 16px;
+    }
+    .section.active {
+      display: flex;
+      z-index: 2;
+      animation: fadeIn 1s;
+    }
+    @keyframes fadeIn { from { opacity: 0;} to { opacity: 1; } }
+    
+    /* PAGE 1: Name input */
+    #nameForm {
+      background: #fff;
+      box-shadow: 0 6px 32px #f2b2e632;
+      border-radius: 24px;
+      padding: 40px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-top: 10vh;
+    }
+    #nameForm input {
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1.5px solid #d49dd4;
+      font-size: 1.1em;
+      outline: none;
+      transition: border 0.2s;
+    }
+    #nameForm input:focus {
+      border: 1.5px solid #a14ca1;
+    }
+    #nameForm button {
+      background: linear-gradient(90deg, #ff8ac6, #be7aff 70%);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      padding: 12px 36px;
+      font-size: 1.1em;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    #nameForm button:hover {
+      background: linear-gradient(90deg, #be7aff, #ff8ac6 70%);
+    }
+
+    /* PAGE 2: Cake */
+    .cake-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+    .cake-emoji {
+      font-size: 100px;
+      filter: drop-shadow(0 10px 24px #ffb4e8aa);
+      margin-bottom: 0;
+      transition: transform 0.2s;
+    }
+    .blow-btn {
+      background: linear-gradient(90deg, #ff8ac6, #be7aff 70%);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      padding: 14px 36px;
+      font-size: 1.2em;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 28px;
+      transition: background 0.2s;
+      box-shadow: 0 6px 32px #f2b2e662;
+    }
+    .blow-btn:active {
+      transform: scale(0.97);
+    }
+    .gallery-btn {
+      background: linear-gradient(90deg, #a0ffa8, #70d7ff 70%);
+      border: none;
+      border-radius: 10px;
+      color: #222;
+      padding: 14px 36px;
+      font-size: 1.2em;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 32px;
+      box-shadow: 0 6px 32px #b2f2e632;
+      display: none;
+    }
+    .balloon {
+      position: fixed; /* fixed so they always travel from bottom to top of viewport */
+      width: 45px; height: 65px;
+      border-radius: 50% 50% 50% 50%/60% 60% 40% 40%;
+      opacity: 0.93;
+      z-index: 9999;
+      left: 0;
+      bottom: -80px;
+      animation: fly 3.5s cubic-bezier(.28,.68,.46,1.03) forwards;
+      will-change: transform, opacity;
+    }
+    @keyframes fly {
+      0%   { transform: translateY(0) scale(1);}
+      60%  { opacity: 1; }
+      100% { transform: translateY(-110vh) scale(1.1); opacity:0.2;}
+    }
+    .balloon:after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 50%;
+      bottom: -18px;
+      width: 3px; height: 18px;
+      background: #8884;
+      border-radius: 2px;
+      transform: translateX(-50%);
+    }
+
+    /* PAGE 3: 3D Carousel Gallery */
+    .carousel-container {
+      perspective: 1200px;
+      width: 400px;
+      height: 320px;
+      margin: 0 auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .carousel {
+      width: 330px;
+      height: 240px;
+      position: relative;
+      transform-style: preserve-3d;
+      margin: 0 auto;
+      animation: spinCarousel 18s linear infinite;
+    }
+    @keyframes spinCarousel {
+      from { transform: rotateY(0deg);}
+      to   { transform: rotateY(-360deg);}
+    }
+    .carousel .carousel__cell {
+      position: absolute;
+      width: 130px; height: 130px;
+      left: 100px; top: 40px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 18px #cc8cff44;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid #f3a0ff25;
+      transition: box-shadow 0.3s;
+    }
+    .carousel .carousel__cell img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 16px;
+      pointer-events: none;
+      user-select: none;
+    }
+    .gallery-next-btn {
+      background: linear-gradient(90deg, #f9a0e3, #bff9c9 70%);
+      border: none;
+      border-radius: 10px;
+      color: #222;
+      padding: 14px 36px;
+      font-size: 1.1em;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 32px;
+      box-shadow: 0 6px 32px #b2f2e632;
+    }
+    .gallery-next-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* PAGE 4: Greeting Card */
+    .greeting-card {
+      background: linear-gradient(150deg, #fff1fa 30%, #e6faff 100%);
+      box-shadow: 0 10px 36px #ffbaba44;
+      border-radius: 22px;
+      max-width: 95vw;
+      width: 420px;
+      margin: 36px auto 0 auto;
+      padding: 34px 26px 44px 26px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      border: 3.5px solid #ffd8ff;
+      font-size: 1.2em;
+      animation: cardPop 1s cubic-bezier(.61,1.56,.54,.99) 0.3s backwards;
+      overflow: hidden;
+    }
+    @keyframes cardPop {
+      0% { transform: scale(0.6) rotateZ(-12deg); opacity: 0.2;}
+      70% { transform: scale(1.1) rotateZ(4deg);}
+      100% { transform: scale(1) rotateZ(0);}
+    }
+    .greeting-card h2 {
+      color: #a14ca1;
+      font-size: 2em;
+      margin-bottom: 0.55em;
+      position: relative;
+      z-index: 2;
+    }
+    .greeting-card .card-content {
+      font-size: 1.18em;
+      color: #444;
+      line-height: 1.8;
+      margin-bottom: 1.1em;
+      z-index: 2;
+      position: relative;
+      font-family: 'Segoe Script', cursive, sans-serif;
+    }
+    .greeting-card .card-footer {
+      margin-top: 25px;
+      font-size: 1.14em;
+      color: #b682eb;
+      font-style: italic;
+      letter-spacing: 1px;
+      z-index: 2;
+      position: relative;
+    }
+    /* Floating confetti in greeting card */
+    .confetti {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      opacity: 0.8;
+      z-index: 1;
+      pointer-events: none;
+      animation: confetti-float 2.7s linear forwards;
+    }
+    @keyframes confetti-float {
+      0% { transform: translateY(0);}
+      100% { transform: translateY(220px);}
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 600px) {
+      .carousel-container { width: 95vw;}
+      .carousel { width: 98vw; }
+      .carousel .carousel__cell { width: 90px; height: 90px; left: 30vw;}
+      .greeting-card { width: 97vw; padding: 22px 8px 34px 8px;}
+    }
+  </style>
+</head>
+<body>
+  <!-- Page 1: Name -->
+  <section class="section active" id="section1">
+    <form id="nameForm">
+      <h2>🎉 Hey, what's your name?</h2>
+      <input type="text" id="userName" placeholder="Enter your name..." autocomplete="off" required>
+      <button type="submit">Continue</button>
+    </form>
+  </section>
+  <!-- Page 2: Cake & Balloons -->
+  <section class="section" id="section2">
+    <div class="cake-box">
+      <div class="cake-emoji" id="cakeEmoji" aria-label="Birthday Cake">🎂</div>
+      <button class="blow-btn" id="blowBtn">Blow out the candle!</button>
+      <button class="gallery-btn" id="galleryBtn" style="display:none;">Photo Gallery 📸</button>
+    </div>
+  </section>
+  <!-- Page 3: Gallery (3D carousel) -->
+  <section class="section" id="section3">
+    <h2 style="margin-bottom:10px;">💖 Special Memories 💖</h2>
+    <div class="carousel-container">
+      <div class="carousel" id="carousel"></div>
+    </div>
+    <button class="gallery-next-btn" id="greetBtn">🎈From A Friend🎈</button>
+  </section>
+  <!-- Page 4: Greeting Card -->
+  <section class="section" id="section4">
+    <div class="greeting-card" id="greetingCard">
+      <h2>🎈 Happy Birthday <span id="nameGreeting"></span> Candy ! 🎈</h2>
+      <div class="card-content" id="mainGreeting">
+        Happy Birthday! May your day be filled with laughter, love, and beautiful surprises.<br>
+        Wishing you endless happiness, good health, and success always.<br>
+        You deserve a birthday as wonderful as you are.<br>
+        <span style="font-size:1.7em; color:#ff8ac6; display:inline-block; margin-top:8px;">💖🎂✨</span>
+      </div>
+      <div class="card-footer">
+       
+       
+        <span style="color:#be7aff; font-weight:bold; font-size:1.08em;">----- with lots of love from A Friend 😊</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Balloons Container -->
+  <div id="balloonContainer"></div>
+
+  <script>
+    // ---- Page navigation ----
+    function showSection(n) {
+      document.querySelectorAll('.section').forEach((s, i) => {
+        s.classList.toggle('active', i === n-1);
+      });
+      window.scrollTo(0,0);
+    }
+
+    // ---- PAGE 1: Name input ----
+    document.getElementById('nameForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      let name = document.getElementById('userName').value.trim();
+      if (!name) return;
+      window.birthdayName = name;
+      showSection(2);
+    });
+
+    // ---- PAGE 2: Cake + Balloons ----
+    const blowBtn = document.getElementById('blowBtn');
+    const cakeEmoji = document.getElementById('cakeEmoji');
+    const balloonColors = [
+      "#ff8ac6", "#be7aff", "#a0ffa8", "#70d7ff", "#fff4a3", "#ffb06b"
+    ];
+    function randomBalloonColor() {
+      return balloonColors[Math.floor(Math.random()*balloonColors.length)];
+    }
+    function spawnBalloon(left, delay) {
+      let balloon = document.createElement('div');
+      balloon.className = 'balloon';
+      balloon.style.left = left + 'vw';
+      balloon.style.background = randomBalloonColor();
+      balloon.style.animationDelay = delay + 's';
+      // Add random horizontal drift using translateX in animation
+      let drift = (Math.random()-0.5)*30;
+      balloon.style.transform = `translateX(${drift}px)`;
+      document.body.appendChild(balloon);
+      setTimeout(() => balloon.remove(), 4000);
+    }
+    function launchBalloons() {
+      // 12-18 balloons, evenly spaced, with random horizontal drift
+      let n = 14 + Math.floor(Math.random()*5);
+      for (let i = 0; i < n; i++) {
+        let left = 5 + (90 / (n-1)) * i;
+        let delay = Math.random()*0.6;
+        setTimeout(() => spawnBalloon(left, delay), delay*600);
+      }
+    }
+    blowBtn.addEventListener('click', function() {
+      cakeEmoji.innerHTML = "🎂"; // Candle blown
+      blowBtn.disabled = true;
+      cakeEmoji.style.transform = "scale(1.07) rotate(-4deg)";
+      setTimeout(() => {
+        cakeEmoji.style.filter = "grayscale(0.7) brightness(0.95)";
+        launchBalloons();
+      }, 400);
+      setTimeout(() => {
+        document.getElementById('galleryBtn').style.display = 'block';
+        blowBtn.style.display = 'none';
+        cakeEmoji.style.transform = "scale(1) rotate(0)";
+      }, 2200);
+    });
+    document.getElementById('galleryBtn').addEventListener('click', function() {
+      showSection(3);
+      setTimeout(initCarousel, 250);
+    });
+
+    // ---- PAGE 3: 3D Carousel Gallery ----
+    const photos = [
+      // Add your own photos here (absolute or relative URLs)
+       "photo1.jpeg",
+      "photo2.jpeg",
+      "photo3.jpeg",
+      "photo4.jpeg",
+      "photo5.jpeg",
+      "photo6.jpeg"
+    ];
+    function initCarousel() {
+      let carousel = document.getElementById('carousel');
+      carousel.innerHTML = '';
+      let N = photos.length;
+      let theta = 360/N;
+      let radius = 130 / Math.tan(Math.PI/N);
+      for (let i = 0; i < N; i++) {
+        let cell = document.createElement('div');
+        cell.className = 'carousel__cell';
+        cell.style.transform = `rotateY(${i*theta}deg) translateZ(${radius}px)`;
+        let img = document.createElement('img');
+        img.src = photos[i];
+        cell.appendChild(img);
+        carousel.appendChild(cell);
+      }
+    }
+    document.getElementById('greetBtn').addEventListener('click', function() {
+      showSection(4);
+      if (window.birthdayName) {
+        document.getElementById('nameGreeting').textContent = window.birthdayName;
+      }
+      showConfetti();
+    });
+
+    // ---- Confetti for Greeting Card ----
+    function showConfetti() {
+      const greetingCard = document.getElementById('greetingCard');
+      // Remove old confetti if any
+      greetingCard.querySelectorAll('.confetti').forEach(c => c.remove());
+      const confettiColors = [
+        "#ff8ac6", "#be7aff", "#a0ffa8", "#70d7ff", "#fff4a3", "#ffb06b", "#f9a0e3", "#bff9c9"
+      ];
+      for (let i = 0; i < 36; i++) {
+        let confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = (10 + Math.random()*90) + '%';
+        confetti.style.top = (-10 + Math.random()*5) + 'px';
+        confetti.style.background = confettiColors[Math.floor(Math.random()*confettiColors.length)];
+        confetti.style.animationDelay = (Math.random()*1.3)+'s';
+        greetingCard.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 2700);
+      }
+    }
+
+    // ---- Misc: Start App ----
+    showSection(1);
+
+  </script>
+</body>
+</html>
